@@ -1,92 +1,48 @@
-/* RESET DE BAZĂ */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+// Selectăm elementele din DOM
+const button = document.getElementById("getCharacterBtn");
+const characterImg = document.getElementById("characterImg");
+const statusCell = document.getElementById("status");
+const speciesCell = document.getElementById("species");
+const genderCell = document.getElementById("gender");
 
-/* FUNDAL PAGINĂ */
-body {
-    min-height: 100vh;
-    background-color: #0b0f14; /* dark space */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Arial', sans-serif;
-    color: #e6e6e6;
-}
+// Atașăm event listener pe buton
+button.addEventListener("click", getCharacter);
 
-/* CONTAINER PRINCIPAL */
-#app {
-    background-color: #111827; /* dark card */
-    border: 2px solid #39ff14; /* green neon */
-    border-radius: 12px;
-    padding: 24px;
-    width: 360px;
-    text-align: center;
-    box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
-}
+// Funcția principală
+async function getCharacter() {
+    console.log("Click pe buton: Get Character");
 
-/* TITLU */
-#app h1 {
-    margin-bottom: 20px;
-    color: #39ff14;
-    letter-spacing: 1px;
-}
+    // Generăm ID random între 1 și 826
+    const randomId = Math.floor(Math.random() * 826) + 1;
+    console.log("ID generat:", randomId);
 
-/* IMAGINE PERSONAJ */
-#character-image img {
-    width: 100%;
-    max-width: 250px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    border: 2px solid #1f2937;
-    background-color: #000;
-}
+    const url = `https://rickandmortyapi.com/api/character/${randomId}`;
+    console.log("URL apelat:", url);
 
-/* TABEL */
-#character-details {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
+    try {
+        console.log("Pornim fetch-ul către API...");
+        const response = await fetch(url);
 
-#character-details th,
-#character-details td {
-    padding: 10px;
-    border-bottom: 1px solid #1f2937;
-}
+        if (!response.ok) {
+            throw new Error(`Eroare HTTP: ${response.status}`);
+        }
 
-#character-details th {
-    text-align: left;
-    color: #9ca3af;
-    font-weight: normal;
-}
+        const data = await response.json();
+        console.log("Date primite de la API:", data);
 
-#character-details td {
-    text-align: right;
-    color: #e6e6e6;
-}
+        // Actualizăm imaginea
+        characterImg.src = data.image;
+        characterImg.alt = data.name;
+        console.log("Imagine actualizată");
 
-/* BUTON */
-#getCharacterBtn {
-    width: 100%;
-    padding: 12px;
-    background-color: transparent;
-    border: 2px solid #39ff14;
-    color: #39ff14;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
+        // Actualizăm tabelul
+        statusCell.textContent = data.status;
+        speciesCell.textContent = data.species;
+        genderCell.textContent = data.gender;
+        console.log("Detalii actualizate în tabel");
 
-#getCharacterBtn:hover {
-    background-color: #39ff14;
-    color: #0b0f14;
-    box-shadow: 0 0 12px rgba(57, 255, 20, 0.6);
-}
-
-#getCharacterBtn:active {
-    transform: scale(0.97);
+    } catch (error) {
+        console.error("A apărut o eroare:", error);
+        alert("Nu am putut încărca personajul. Încearcă din nou.");
+    }
 }
